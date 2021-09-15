@@ -1,0 +1,107 @@
+---
+title: "Chap 2 Intro to R"
+output: html_notebook
+---
+
+
+```{r}
+##############
+## syntax
+## function_name(input1,input2)
+
+# c() is the concatenate function
+x<- c(1,3,2,5)
+x
+
+# for some reason = and <- are the same
+y= c(1,3,2,5)
+y
+
+```
+
+```{r}
+# help
+?c
+```
+
+```{r}
+# example functions and operations
+'x+y'
+x+y
+
+'length x:'
+length(x)
+
+'length y'
+length(y)
+
+'what have we saved so far'
+ls()
+
+'remove x'
+rm(x)
+
+'whats left'
+ls()
+
+'sqrt(y)'
+sqrt(y)
+
+'imaginary'
+iiii = c(1,-1,-2,0)
+sqrt(iiii)
+
+```
+
+```{r}
+## matrices
+## you can name function very liberally
+
+?matrix
+mom.is.cool = matrix(data=c(1,2,3,4),nrow=2,ncol=2)
+'mom is what'
+mom.is.cool
+
+'dad is cooler'
+dad.is.cooler= matrix(c(5,6,7,8),2,2)
+dad.is.cooler
+
+'zoe is coolest' #swap rows and columns
+zoe.is.coolest=matrix(c(1,2,3,4),2,2,byrow=TRUE)
+zoe.is.coolest
+```
+```{r}
+### more example functions
+# random normally distribute
+'see it once'
+rnorm(10)
+'see it twice'
+rnorm(10)
+
+# let's see the correlation of noise
+x=rnorm(50)
+y=x+rnorm(50,mean=50,sd=.1)
+z=rnorm(50)
+'autocorrelated'
+cor(x,y)
+'noise'
+cor(x,z)
+
+# use the same random number everytime
+set.seed(1303)
+rnorm(50)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
