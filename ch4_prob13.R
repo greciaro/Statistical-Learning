@@ -30,6 +30,9 @@ print(list_best_corr)
 three_best_corr = names(list_best_corr)[2:4]
 print(three_best_corr)
 
+
+#######################LOOP BEGINS##############################
+
 #Divide data set, between the trainning and testing data sets
 splitting_portion = 3*n/4
 inds_train = sample(1:n,splitting_portion)
@@ -41,7 +44,17 @@ Boston_test = Boston[inds_test,]
 
 #Logistic Regression
 lr_model = glm( crim_0_or_1 ~ nox + rad + dis, data=Boston_train, family=binomial)
-prediction = predict( lr_model, newdata=Boston_test, type="response" )
-binary_prediction = rep( 0, length(prediction))
-binary_prediction[ prediction > 0.5 ] = 1
-CM = table( predicted=binary_prediction, truth=Boston_test$crim_0_or_1 )
+lr_prediction = predict( lr_model, newdata=Boston_test, type="response" )
+lr_binary_prediction = rep( 0, length(lr_prediction))
+lr_binary_prediction[ lr_prediction > 0.5 ] = 1
+lr_p_vs_t = table(predicted=lr_binary_prediction, truth=Boston_test$crim_0_or_1)
+lr_perc_correct = 100 * ( lr_p_vs_t[1,1] + lr_p_vs_t[2,2] ) / sum(lr_p_vs_t) 
+print(perc_correct)
+
+#Linear Discriminant Analysis (LDA)
+lda_model = lda( crim_0_or_1 ~ nox + rad + dis, data=Boston_train )
+
+lda_prediction = predict( lda.fit, newdata=Boston.test )
+CM = table( predicted=lda.predict$class, truth=Boston.test$crim01 )
+print( CM )
+print( sprintf( "LDA: overall fraction correct= %10.6f", ( CM[1,1] + CM[2,2] ) / sum(CM) ) 
