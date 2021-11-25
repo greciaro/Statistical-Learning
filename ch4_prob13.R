@@ -66,3 +66,15 @@ qda_p_vs_t = table(predicted=qda_prediction$class, truth=Boston_test$crim_0_or_1
 print(qda_p_vs_t)
 qda_perc_correct = 100 * (qda_p_vs_t[1,1] + qda_p_vs_t[2,2]) / sum(qda_p_vs_t) 
 print(qda_perc_correct)
+
+#k-Nearest Neighbour Classification (kNN) k=1
+X_train = Boston_train; X_train$crim_0_or_1 = NULL
+Y_train = Boston_train$crim_0_or_1
+X_test = Boston_test; X_test$crim_0_or_1 = NULL
+k1_prediction = knn( X_train, X_test, Y_train, k=1 )
+k1_p_vs_t = table(predicted=k1_prediction, truth=Boston_test$crim_0_or_1) 
+print(k1_p_vs_t)
+k1_perc_correct = 100 * (k1_p_vs_t[1,1] + k1_p_vs_t[2,2]) / sum(k1_p_vs_t) 
+print(k1_perc_correct)
+
+
