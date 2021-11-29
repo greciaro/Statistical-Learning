@@ -77,9 +77,9 @@ print(k1_p_vs_t)
 k1_perc_correct = 100 * (k1_p_vs_t[1,1] + k1_p_vs_t[2,2]) / sum(k1_p_vs_t) 
 print(k1_perc_correct)
 
-#k-Nearest Neighbour Classification (kNN) k=2
-k2_prediction = knn( X_train, X_test, Y_train, k=2 )
-k2_p_vs_t = table(predicted=k2_prediction, truth=Boston_test$crim_0_or_1) 
-print(k2_p_vs_t)
-k2_perc_correct = 100 * (k2_p_vs_t[1,1] + k2_p_vs_t[2,2]) / sum(k2_p_vs_t) 
-print(k2_perc_correct)
+#k-Nearest Neighbour Classification (kNN) k=3
+k3_prediction = knn( X_train, X_test, Y_train, k=3 )
+k3_p_vs_t = table(predicted=k3_prediction, truth=Boston_test$crim_0_or_1) 
+print(k3_p_vs_t)
+k3_perc_correct = 100 * (k3_p_vs_t[1,1] + k3_p_vs_t[2,2]) / sum(k3_p_vs_t) 
+print(k3_perc_correct)
