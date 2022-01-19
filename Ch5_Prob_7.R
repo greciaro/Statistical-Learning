@@ -13,7 +13,7 @@ m_loocv = glm( Direction ~ Lag1 + Lag2, data=Weekly[-1,], family="binomial" )
 
 #Part (c):
 print( sprintf( "Prediction on first sample is %d (1=>Up; 0=>Down)", predict( m_loocv, newdata=Weekly[1,] ) > 0 ) )
-print( sprintf( "First samples true direction is %s", Weekly[1,]$Direction ) )
+print( sprintf( "True direction of the frist sample is %s", Weekly[1,]$Direction ) )
 
 #Part (d):
 n = dim(Weekly)[1]
