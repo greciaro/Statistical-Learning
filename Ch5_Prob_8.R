@@ -1,7 +1,6 @@
 #CHATER 5
 #PROBLEM 8
 
-if( ! require("ISLR") ){ install.packages("ISLR") }
 install.packages("ISLR")
 install.packages("boot")
 library(boot)
