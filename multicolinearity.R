@@ -145,9 +145,8 @@ betas_2 = rotation_2 %*% model_2$coef[-1]
 betas_2
 
 
-
 #(b) Factor Analysis (FA)
-DF4_only_x_pca = factanal(DF4_only_x, factor = 14)
+DF4_only_x_fa = factanal(DF4_only_x[,1:16], factor = 10)
 
 
 
@@ -166,4 +165,21 @@ model
 
 
 #(b)Lasso Regression
+install.packages("glmnet")
+install.packages("tidyverse")
+library(glmnet)
+library(tidyverse)
+library (broom)
+lambdas = 10^seq(2, -3, by = -.1)
+models = cv.glmnet(DF4[-1],y,alpha = 1,lambda = lambdas, standardize = TRUE, nfolds = 10)
+lambda_best = min(models$lambda)
+lambda_best
 
+models$lambda
+
+
+
+cv_models = cv.glmnet(DF4[-1],y,alpha = 1,lambda = lambdas)
+
+x_matrix = DF4[-1]
+y
