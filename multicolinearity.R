@@ -15,7 +15,7 @@ summary(model)
 
 #2. Quick solutions to solve Colinearity
 
-#(a)Using the model previous model, 100 times more samples(observations)are needed to have realiable coefficients.
+#(a)Using the previous model, 1000 times more samples(observations) are needed to have realiable coefficients.
 
 #(b)Creating a new data set with 10 input variables.
 x1 = rnorm(100)
@@ -28,17 +28,21 @@ x8 = rnorm(100)
 x9 = rnorm(100)
 x2 = rnorm(100, mean=x1, sd=0.01)
 x10 = rnorm(100, mean=x9, sd=0.01)
+y = rnorm(100,mean=3+x1+x2+x3+x4+x5+x6+x7+x8+x9+x10, sd=0.2)
+DF2 = data.frame(y=y, x1=x1, x2=x2,x3=x3,x4=x4,x5=x5,x6=x6,x7=x7,x8=x8,x9=x9,x10=x10)
+
+cor(DF2)
 
 print(sprintf("X1 and x2 are %10.6f correlated ", cor(x1,x2)))
 print(sprintf("X9 and x10 are %10.6f correlated ", cor(x1,x2)))
-y = rnorm(100,mean=3+x1+x2+x3+x4+x5+x6+x7+x8+x9+x10, sd=0.2)
-DF2 = data.frame(y=y, x1=x1, x2=x2,x3=x3,x4=x4,x5=x5,x6=x6,x7=x7,x8=x8,x9=x9,x10=x10)
+
+
 model = lm(y ~ x2+x3+x4+x5+x6+x7+x8+x10, data=DF2)
 summary(model)
 
-#When leaving out one of the variables in each colinear pair, the coefficients of the linear regression are stable. The coeficients of the variables of the colinear pairs that remained in de model endedup carrying the weight of the missing variable.
+#When leaving out one of the variables in each colinear pair, the coefficients of the linear regression are stable. The coeficients of the variables of the colinear pairs that remained in the model endedup carrying the weight of the missing variable.
 
-#(c) The problem with the findings on (a) is that is very unlikely that enough resources (time, money, etc.) are available to increase the sample size one hundred fold. The problem with getting good results from the linear regression when ignoring variables is that your model will have a specification bias when future predictions are needed.
+#(c) The problem with the findings on (a) is that is very unlikely that enough resources (time, money, etc.) are available to increase the sample size one thousand fold. The problem with getting good results from the linear regression when ignoring variables is that your model will have a specification bias when future predictions are needed.
 
 
 #3. When Colinearity is a problem?
@@ -85,7 +89,7 @@ x18 = rnorm(100)
 x19 = rnorm(100)
 x20 = x16+x17+x18+x19
 
-y = rnorm(100,mean=3+x1+x2+x3+x4+x5+x6+x7+x8+x9+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x20, sd=0.2)
+y = rnorm(100,mean=x1+x2+x3+x4+x5+x6+x7+x8+x9+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x20, sd=0.2)
 
 DF4 = data.frame(y=y, x1=x1,x2=x2,x3=x3,x4=x4,x5=x5,x6=x6,x7=x7,x8=x8,x9=x9,x10=x10,x11=x11,x12=x12,x13=x13,x14=x14,x15=x15,x16=x16,x17=x17,x18=x18,x19=x19,x20=x20)
 
@@ -116,8 +120,50 @@ vif_vector = vif(model)
 
 #6. Multicolinearity Remediation(Part 1)
 
+#(a) Principal Component Analysis (PCA)
+DF4_only_x = DF4[,-1]
+DF4_only_x_pca = prcomp(DF4_only_x, center = TRUE, scale = TRUE)
+plot(DF4_only_x_pca)
+screeplot(DF4_only_x_pca, type="line",main="Scree Plot")
+summary(DF4_only_x_pca)
+DF4_only_x_pca$rotation #how PCs are made from the input variables
+eigen(cor(DF4_only_x))$values#eigen values of original data
+diag(var(DF4_only_x_pca$x[,]))#variance of each PC
+DF4_pca = cbind(DF4[,1],data.frame(DF4_only_x_pca$x))
+colnames(DF4_pca)[1] = "y_pca"
+cor(DF4_pca)[,1]
+model = lm(y_pca ~., data = DF4_pca)
+summary(model)#PCs 9,17,8,19 and 20 are not statiscally significant, which means they don't contribute to the prediction of y
+betas = DF4_only_x_pca$rotation %*% model$coefficients[-1]
+betas # Indluding PC's that are not relevant affects the quantification of betas 
+
+model_2 = lm(y_pca ~ PC1+PC2+PC3+PC4+PC5+PC6+PC7+PC8+PC10+PC11+PC12+PC13+PC14+PC15+PC16, data = DF4_pca)
+summary(model_2)
+rotation_2 = DF4_only_x_pca$rotation[1:16,1:16]
+rotation_2 = rotation_2[-9,-9]
+betas_2 = rotation_2 %*% model_2$coef[-1]
+betas_2
 
 
-#6. Multicolinearity Remediation(Part 2)
 
+#(b) Factor Analysis (FA)
+DF4_only_x_pca = factanal(DF4_only_x, factor = 14)
+
+
+
+#7. Multicolinearity Remediation(Part 2)
+
+#(a)Ridge Regression
+install.packages("MASS")
+library(MASS)
+lambdas = seq(0,1,0.001)
+models = lm.ridge(y ~ x1+x2+x3+x4+x5+x6+x7+x8+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x20, data=DF4,lambda = lambdas)
+select(models)
+model = lm.ridge(y ~ x1+x2+x3+x4+x5+x6+x7+x8+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x20, data=DF4,lambda = 0.011)
+model
+
+# The best penalty was 0.011 and we found the beta values for 3 variables are almost zero which means their contribution will be minimal or none.
+
+
+#(b)Lasso Regression
 
