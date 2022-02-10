@@ -93,15 +93,31 @@ model = lm(y ~ x1+x2+x3+x4+x5+x6+x7+x8+x10+x11+x12+x13+x14+x15+x16+x17+x18+x19+x
 
 summary(model)
 
-# the output variable "y" cannot be calculated by linear regression as the beta values (coefficients) of the input variables that have multicolinearity are indetermined.
-
-
+# The output variable "y" cannot be calculated by linear regression as the beta values (coefficients) of the input variables that have multicolinearity are indetermined. The difference between these results and the one in Section two are that linear regression can model a data set with colineary but not with multicolinearity.
 
 #5. Multicolinearity Diagnose
 
 #The corrleation matrix is limited to find pairwise correlations, theefore it will only find colinearity.
 
+#Eigensystem Analysis
+eig_values =eigen(cor(DF4))$values
+#Eigen values vary in magnitude from large to small, therefore, there is multicolinearity.
 
-#6. Multicolinearity Remediation
+#Condition Number
+cond_num = abs(max(eig_values)/min(eig_values))
+#Condition Number is bigger than 100
+
+#Variance Inflation Factor
+install.packages("car")
+library(car)
+vif_vector = vif(model)
+#VIF cannot be calculated becuse requires to perform linear regression, which we previosly saw its not possible with this dataset.This means, there is not only multicolinearity but also its perfect!!! OMG! There a perfect linear relationship between groups of variables.
+
+
+#6. Multicolinearity Remediation(Part 1)
+
+
+
+#6. Multicolinearity Remediation(Part 2)
 
 
