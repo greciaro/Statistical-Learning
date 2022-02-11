@@ -2,10 +2,10 @@
 
 #1. Effects of High Colinearity
 
-x1 = rnorm(100)
-x2 = rnorm(100, mean=x1, sd=0.01)
-print(sprintf("X1 and x2 are %10.6f correlated ", cor(x1,x2)))
-y = rnorm(100,mean=3+x1+x2, sd=0.2)
+x1 = rnorm(100000)
+x2 = rnorm(100000, mean=x1, sd=0.01)
+sprintf("X1 and x2 are %10.6f correlated ", cor(x1,x2))
+y = rnorm(100000,mean=3+x1+x2, sd=0.2)
 DF1 = data.frame(y=y, x1=x1, x2=x2)
 model = lm(y ~ x1+x2, data=DF1)
 summary(model)
@@ -47,23 +47,23 @@ summary(model)
 
 #3. When Colinearity is a problem?
 
-counter = seq(from = 0.01, to = 100, by = 0.1)
+counter = seq(from = 0.01, to = 100, by = 0.5)
 n = length(counter)
-x1_matrix = matrix(0,100,n)
-x2_matrix = matrix(0,100,n)
+x1_vector = matrix(0,20,n)
+x2_vector = matrix(0,20,n)
 cor_vector = matrix(0,1,n)
-y_matrix = matrix(0,100,n)
+y_matrix = matrix(0,20,n)
 beta1_vector = matrix(0,1,n)
 
 for (i in 1:n){
-  x1_vector[,i] = rnorm(100)
-  x2_vector[,i] = rnorm(100, mean=x1_vector[,i], sd=counter[i])
+  x1_vector[,i] = rnorm(20)
+  x2_vector[,i] = rnorm(20, mean=x1_vector[,i], sd=counter[i])
   cor_vector[i] = cor(x1_vector[,i],x2_vector[,i])
-  y_matrix[,i] = rnorm(100,mean=3+x1_vector[,i]+x2_vector[,i], sd=0.2)
+  y_matrix[,i] = rnorm(20,mean=3+x1_vector[,i]+x2_vector[,i], sd=0.2)
   beta1_vector[i] = lm(y_matrix[,i] ~ x1_vector[,i]+x2_vector[,i])$coef[2]
 }
 
-plot(cor_vector,beta1_vector, lwd=2, pch=19, xlim=c(0.5, 1), ylim=c(-3, 3))
+plot(cor_vector,beta1_vector, lwd=2, pch=19, xlim=c(0, 1), ylim=c(0, 2))
 
 # With a very well defined data set like the one in this section, the plot show that beta1 becomes unstable at high levels of correlation (above 0.9) between x1 and x2. Based on the literature, the recommended treshold for colinearity is as low as 0.85, depending on the statistical significance of the results.
 
@@ -115,6 +115,7 @@ cond_num = abs(max(eig_values)/min(eig_values))
 install.packages("car")
 library(car)
 vif_vector = vif(model)
+
 #VIF cannot be calculated becuse requires to perform linear regression, which we previosly saw its not possible with this dataset.This means, there is not only multicolinearity but also its perfect!!! OMG! There a perfect linear relationship between groups of variables.
 
 
@@ -146,7 +147,7 @@ betas_2
 
 
 #(b) Factor Analysis (FA)
-DF4_only_x_fa = factanal(DF4_only_x[,1:16], factor = 10)
+
 
 
 
@@ -165,21 +166,4 @@ model
 
 
 #(b)Lasso Regression
-install.packages("glmnet")
-install.packages("tidyverse")
-library(glmnet)
-library(tidyverse)
-library (broom)
-lambdas = 10^seq(2, -3, by = -.1)
-models = cv.glmnet(DF4[-1],y,alpha = 1,lambda = lambdas, standardize = TRUE, nfolds = 10)
-lambda_best = min(models$lambda)
-lambda_best
 
-models$lambda
-
-
-
-cv_models = cv.glmnet(DF4[-1],y,alpha = 1,lambda = lambdas)
-
-x_matrix = DF4[-1]
-y
