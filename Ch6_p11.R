@@ -65,7 +65,7 @@ p = dim(Boston)[2]
 # STEP 2: SPLIT YOUR OBSERVATTIONS IN TWO GROUPS:
 #         ONE GROUP CALLED "train" TO TRAIN YOUR MODELS
 #         ANOTHER GROUP CALLED "test" TO TEST YOUR DATASET
-########
+
 # Best subset selection using cross validation with 10 folds.
 
 predict.regsubsets <- function(object, newdata, id, ...) {
