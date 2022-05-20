@@ -4,12 +4,13 @@
 
 
 
-f( ! require("ISLR") ){ install.packages("ISLR") }
+if( ! require("ISLR") ){ install.packages("ISLR") }
 if( ! require("glmnet") ){ install.packages("glmnet") }
 if( ! require("pls") ){ install.packages("pls") }
 install.packages("ISLR")
 install.packages("glmnet")
 install.packages("pls")
+install.packages("leaps")
 library(MASS)
 library(leaps)
 library(glmnet)
@@ -20,6 +21,25 @@ library(caret)
 
 
 set.seed(0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+#STEP 0: IMPORT YOUR DATASET
+set.seed(1)
+library(ISLR)
+library(MASS)
+library(leaps)
+library(glmnet)
 
 
 
@@ -47,6 +67,32 @@ p = dim(Boston)[2]
 
 
 
+
+## Loading required package: Matrix Loading required package: lattice Loaded
+## glmnet 1.9-5
+
+#BEST SUBSET SELECTION
+
+predict.regsubsets = function(object, newdata, id, ...) {
+  form = as.formula(object$call[[2]])
+  mat = model.matrix(form, newdata)
+  coefi = coef(object, id = id)
+  mat[, names(coefi)] %*% coefi
+}
+
+k = 10
+p = ncol(Boston) - 1
+folds = sample(rep(1:k, length = nrow(Boston)))
+cv.errors = matrix(NA, k, p)
+for (i in 1:k) {
+  best.fit = regsubsets(crim ~ ., data = Boston[folds != i, ], nvmax = p)
+  for (j in 1:p) {
+    pred = predict(best.fit, Boston[folds == i, ], id = j)
+    cv.errors[i, j] = mean((Boston$crim[folds == i] - pred)^2)
+  }
+}
+rmse.cv = sqrt(apply(cv.errors, 2, mean))
+plot(rmse.cv, pch = 19, type = "b")
 
 
 
