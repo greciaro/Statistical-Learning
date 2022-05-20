@@ -61,15 +61,32 @@ library(glmnet)
 
 # CALL n THE NUMBER OF OBSERVATIONS
 n = dim(Boston)[1]
+n
 
 # CALL p THE NUMBER OF PARAMETERS
 p = dim(Boston)[2]
+p
 
 
 
 
-## Loading required package: Matrix Loading required package: lattice Loaded
-## glmnet 1.9-5
+
+
+
+
+
+#STEP 2: APPLY REGRESSION MODELS
+
+
+
+
+
+
+
+
+
+
+
 
 #BEST SUBSET SELECTION
 
@@ -93,6 +110,108 @@ for (i in 1:k) {
 }
 rmse.cv = sqrt(apply(cv.errors, 2, mean))
 plot(rmse.cv, pch = 19, type = "b")
+
+best_subset_No.of_features = which.min(rmse.cv)
+best_subset_cv = rmse.cv[which.min(rmse.cv)]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#LASSO
+x = model.matrix(crim ~ . - 1, data = Boston)
+y = Boston$crim
+cv.lasso = cv.glmnet(x, y, type.measure = "mse")
+plot(cv.lasso)
+coef(cv.lasso)
+sqrt(cv.lasso$cvm[cv.lasso$lambda == cv.lasso$lambda.1se])
+LASSO_features = coef(cv.lasso)
+LASSO_cv = sqrt(cv.lasso$cvm[cv.lasso$lambda == cv.lasso$lambda.1se])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#RIDGE REGRESSION
+
+x = model.matrix(crim ~ . - 1, data = Boston)
+y = Boston$crim
+cv.ridge = cv.glmnet(x, y, type.measure = "mse", alpha = 0)
+plot(cv.ridge)
+coef(cv.ridge)
+sqrt(cv.ridge$cvm[cv.ridge$lambda == cv.ridge$lambda.1se])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#PCR
+library(pls)
+pcr.fit = pcr(crim ~ ., data = Boston, scale = TRUE, validation = "CV")
+summary(pcr.fit)
+coef(pcr.fit)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#STEP3: DECIDE WHICH ONE IS BETTER
+
+best_subset_No.of_features
+best_subset_cv
+
+LASSO_features
+LASSO_cv
+
+
 
 
 
